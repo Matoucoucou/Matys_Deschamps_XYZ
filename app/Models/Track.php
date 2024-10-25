@@ -18,6 +18,7 @@ class Track extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'categorie_id',
         'title',
         'artist',
         'url',
@@ -47,6 +48,10 @@ class Track extends Model
     public function week(): BelongsTo
     {
         return $this->belongsTo(Week::class);
+    }
+
+    public function category() {
+        return $this->belongsTo(Categorie::class);
     }
 
     /**

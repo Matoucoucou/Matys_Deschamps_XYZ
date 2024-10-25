@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Code;
+use App\Models\Categorie;
 use App\Models\Track;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -18,13 +19,21 @@ class DatabaseSeeder extends Seeder
         // Create weeks
         $this->call(WeekSeeder::class);
 
+        $categories = Categorie::factory()->count(9)->create();
+
         // Create content
         User::factory()
             ->count(15)
             ->has(
                 Track::factory(config('app.tracks_per_week'))
-                    ->state(new Sequence(fn () => ['week_id' => rand(2, 7)]))
+                    ->state(new Sequence(fn () => 
+                        ['week_id' => rand(2, 7),
+                        'categorie_id' => $categories->random()->id,
+                        ]
+                    ))
+                    
                     ->sample()
+                    
             )
             ->has(Code::factory(config('app.codes_count')))
             ->sequence(function (Sequence $sequence) {
