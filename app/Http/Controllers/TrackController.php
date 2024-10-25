@@ -8,6 +8,7 @@ use App\Players\Player;
 use App\Rules\PlayerUrl;
 use App\Services\UserService;
 use App\Exceptions\PlayerException;
+use App\Models\Categorie;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,8 @@ class TrackController extends Controller
             'position' => $week->getTrackPosition($track),
             'liked' => $request->user()->likes()->whereTrackId($track->id)->exists(),
             'embed' => $player->embed($track->player, $track->player_track_id),
-        ]);
+            'categorieName' => $track->categorie ? $track->categorie->name : 'Non spécifié',
+        ]); 
     }
 
     /**
@@ -51,6 +53,7 @@ class TrackController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'artist' => ['required', 'string', 'max:255'],
+            'categorie_id' => ['required', 'exists:categories,id'],
             'url' => ['required', 'url', new PlayerUrl()],
         ]);
 
@@ -59,9 +62,10 @@ class TrackController extends Controller
         // Set track title, artist and url
         $track = new Track($validated);
 
-        // Set track's user + week
+        // Set track's user + week + categorie
         $track->user()->associate($request->user());
         $track->week()->associate(Week::current());
+        $track->categorie()->associate($validated['categorie_id']);
 
         try {
             // Fetch track detail from provider (YT, SC)

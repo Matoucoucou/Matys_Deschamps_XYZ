@@ -50,7 +50,7 @@ class Track extends Model
         return $this->belongsTo(Week::class);
     }
 
-    public function category() {
+    public function categorie() {
         return $this->belongsTo(Categorie::class);
     }
 
